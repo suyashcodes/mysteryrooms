@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+require('dotenv').config(); // Load .env at the very top
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const API_TOKEN = '4300a2d3-6623-4de6-a6f6-866d0036091d'; 
+const API_TOKEN = process.env.BOXHERO_API_TOKEN; 
 
 // Fix CORS
 app.use(cors({
