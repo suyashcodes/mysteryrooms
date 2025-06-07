@@ -27,7 +27,7 @@ app.get('/api/products', async (req, res) => {
     let attempt = 1;
 
     while (true) {
-      const url = new URL('https://rest.boxhero-app.com/v1/items');
+      const url = new URL('https://rest.boxhero-app.com/v1/items'); 
       url.searchParams.append('limit', limit);
       if (cursor) url.searchParams.append('cursor', cursor);
 
@@ -41,6 +41,13 @@ app.get('/api/products', async (req, res) => {
         }
       });
 
+      if (response.status === 429) {
+        const retryAfter = response.headers.get('Retry-After') || 2; // seconds
+        console.warn(`⚠️ Rate limited. Retrying after ${retryAfter} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+        continue; // Retry the same request
+      }
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`BoxHero API responded with ${response.status}: ${errorText}`);
@@ -50,12 +57,12 @@ app.get('/api/products', async (req, res) => {
       if (Array.isArray(data.items)) {
         allItems.push(...data.items);
       }
-      // console.log(data);
-      // console.log(data.attrs);
-      
 
       if (!data.cursor) break;
       cursor = data.cursor;
+
+      // Throttle requests to avoid hitting rate limits
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 1 sec delay
     }
 
     console.log(`✅ Total items fetched: ${allItems.length}`);
