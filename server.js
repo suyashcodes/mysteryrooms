@@ -10,7 +10,8 @@ const API_TOKEN = '4300a2d3-6623-4de6-a6f6-866d0036091d';
 app.use(cors({
   origin: [
     'http://localhost:5500', 
-    'http://127.0.0.1:5500'
+    'http://127.0.0.1:5500',
+    'https://mysteryrooms.vercel.app'
   ],
   methods: ['GET', 'POST'],
   credentials: true
